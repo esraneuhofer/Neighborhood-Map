@@ -1,10 +1,15 @@
 var map;
+function log(inpuz) {
+    console.log(inpuz)
+}
 var markers=[];
-
+// var postalcodes=[];
+var plz =["60313","60314","60311"];
 //Foursquare Information for Api Call
 var clientID="AZYB5IEK50AQCSPHVWKLS0YLU5PQMY2DJGBYEAGIEK2JMXWP";
 var clientSecret="T1UPSXQ3PJ2PFQ3FY5RQYRZBDP4DBUWFKUQDGXUCYPSDJSIJ";
 var date =20161016;
+var zoom;
 
 //Locations for Markers on Map
 var locationsMarker = [{title: 'Börse Frankfurt', location: {lat: 50.115270, lng: 8.67771}},
@@ -39,6 +44,7 @@ var styles = [{
     "elementType": "all",
     "stylers": [{"color": "#46bcec"}, {"visibility": "on"}]
 }];
+
 function initMap() {
 
 
@@ -46,7 +52,7 @@ function initMap() {
         center: {lat:  50.110924,lng: 8.682127},
         styles: styles,
         mapTypeControl: false,
-        zoom: 14
+        zoom: 12
     });
 
 
@@ -58,7 +64,6 @@ function initMap() {
 
     //Iterating through locationsArray
     for (var i = 0; i < locationsMarker.length; i++) {
-
         //Setting lng and lat coordinates for foursquare api call
         var lng = locationsMarker[i].location.lng;
         var lat = locationsMarker[i].location.lat;
@@ -73,6 +78,9 @@ function initMap() {
             for ( var y = 0 ; y< array.length;y++){
                 for( var x = 0;x<locationsMarker.length;x++){
                     if(array[y].name === locationsMarker[x].title){
+
+                        // postalcodes.push(array[y].location.postalCode);
+                        locationsMarker[x].plz =array[y].location.postalCode;
                         locationsMarker[x].url =array[y].url;
                         locationsMarker[x].address =array[y].location.address;
                         locationsMarker[x].city =array[y].location.city;
@@ -81,7 +89,7 @@ function initMap() {
             }
 
         }).fail(function() {
-            alert('Problems connection to Foursquare server, please reload the page or contact support');
+                alert('Connection issues with foursquare server, please reload the page or contact support');
         });
 
         //Setting marker attributes
@@ -97,6 +105,9 @@ function initMap() {
         //pushing each marker into Array
         markers.push(marker);
 
+        marker.addListener('click', function(){
+            toggleBounce(this)
+        });
         //Two event listeners to open an infowindow at each marker
         marker.addListener('click', function () {
             populateInfoWindowClick(this, largeInfoWindow);
@@ -138,9 +149,21 @@ function populateInfoWindowClick(marker, infowindow) {
     //Matching information from foursquare to click target
     for (var i = 0;i<locationsMarker.length;i++){
         if(locationsMarker[i].title === marker.title){
-            address =locationsMarker[i].address;
-            city = locationsMarker[i].city;
-            url= locationsMarker[i].url;
+            if(locationsMarker[i].address === undefined){
+                address ="No address available";
+            }else{
+                address =locationsMarker[i].address;
+            }
+            if(locationsMarker[i].city === undefined){
+                city ="No Cityname available";
+            }else{
+                city = locationsMarker[i].city;
+            }
+            if(locationsMarker[i].url === undefined){
+                url ="No URL available ";
+            }else {
+                url = locationsMarker[i].url;
+            }
         }
     }
 
@@ -153,6 +176,9 @@ function populateInfoWindowClick(marker, infowindow) {
         //Make sure the marker property is cleared if the indowindow is closed.
         infowindow.addListener('closeclick', function () {
             infowindow.marker = null;
+            for (var i = 0;i <markers.length;i++) {
+                markers[i].setAnimation(null);
+            }
         });
         var streetViewService  =new google.maps.StreetViewService();
         var radius = 50;
@@ -219,21 +245,23 @@ function makeMarkerIcon(markerColor) {
 }
 
 var viewModel = {
+    list:ko.observableArray(plz),
     locations: ko.observableArray(locationsMarker),
     selectedOption: ko.observable(''),
     openWindow:function () {
+        toggleBounce(this.marker);
         populateInfoWindowClick(this.marker,this.window)
     },
     //Filters dropdown select
     //returns all if undefined
     getCurrentLocations: function() {
         var selectedVal = this.selectedOption();
-        console.log(selectedVal)
         if (!selectedVal)
             return this.locations;
 
         return this.locations().filter(function(f) {
-            return f.location == selectedVal.location;
+            console.log(f.plz)
+            return f.plz == selectedVal;
         });
     }
 };
@@ -250,8 +278,27 @@ viewModel.selectedOption.subscribe(function(newValue) {
     else{
         for (var i = 0;i <markers.length;i++) {
             markers[i].setMap(null);
+            }
+        for(var x = 0 ;x<locationsMarker.length;x++){
+            if(newValue === locationsMarker[x].plz ){
+                locationsMarker[x].marker.setMap(map);
+            }
+
         }
-        newValue.marker.setMap(map);
     }
 
 });
+function yourErrorHandlingFunction() {
+    alert('There was a problem loading them map, please reload or contact support');
+}
+function toggleBounce(thismarker) {
+    for (var i = 0;i <markers.length;i++) {
+        markers[i].setAnimation(null);
+    }
+
+    if (thismarker.getAnimation() !== null) {
+        thismarker.setAnimation(null);
+    } else {
+        thismarker.setAnimation(google.maps.Animation.BOUNCE);
+    }
+}
