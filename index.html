@@ -1,0 +1,58 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Neighborhood_Map</title>
+
+    <link rel="stylesheet" href="styles/bootstrap.min.css">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+<div id="wrapper">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" >
+        <div class="navbar-header" >
+
+            <select id="selectBox" data-bind="options: locations,
+                   value:selectedOption,
+                   optionsText: 'title',
+                   optionsCaption: 'Show all'"
+                    class="form-control">
+            </select>
+
+        </div>
+
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+
+            <ul class="nav navbar-nav side-nav">
+
+                <li data-bind="foreach: { data: getCurrentLocations(), as: 'locations' }">
+
+                    <a data-bind="click: $parent.openWindow,text:locations.title"></a>
+
+                </li>
+
+            </ul>
+
+        </div>
+    </nav>
+    <div id="page-wrapper">
+
+        <div class="container-fluid">
+            <div id="map"></div>
+        </div>
+
+    </div>
+
+</div>
+<script src="dep/jquery.js"></script>
+<script src="dep/knockout.js"></script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8jlLSDfPQfxOP3GSOBUL8cT3yx_bo3IE&libraries=geometry&v=3&callback=initMap"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>
