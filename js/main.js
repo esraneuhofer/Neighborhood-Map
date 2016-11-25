@@ -288,9 +288,12 @@ viewModel.selectedOption.subscribe(function(newValue) {
     }
 
 });
+//Error handling if googlemap couldnt be loaded
 function yourErrorHandlingFunction() {
     alert('There was a problem loading them map, please reload or contact support');
 }
+
+//Animation(bouncing) markers
 function toggleBounce(thismarker) {
     for (var i = 0;i <markers.length;i++) {
         markers[i].setAnimation(null);
