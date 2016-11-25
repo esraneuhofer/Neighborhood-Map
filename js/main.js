@@ -224,8 +224,11 @@ var viewModel = {
     openWindow:function () {
         populateInfoWindowClick(this.marker,this.window)
     },
+    //Filters dropdown select
+    //returns all if undefined
     getCurrentLocations: function() {
         var selectedVal = this.selectedOption();
+        console.log(selectedVal)
         if (!selectedVal)
             return this.locations;
 
@@ -237,7 +240,10 @@ var viewModel = {
 
 ko.applyBindings(viewModel);
 //Filtering markers on Map
+//returns all if undefined
+//else places chosen marker
 viewModel.selectedOption.subscribe(function(newValue) {
+
     if(newValue === undefined){
         showListings();
     }
