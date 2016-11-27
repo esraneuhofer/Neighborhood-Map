@@ -10,7 +10,7 @@ To run localy
 **1.** Clone this repo:
 
 ```
-$ git clone https://github.com/esraneuhofer/Website_Optimization.git
+$ git clone https://github.com/esraneuhofer/Neighborhood-Map.git
 ````
 
 **2.** Serve the application:
