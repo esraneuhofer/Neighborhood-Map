@@ -77,7 +77,8 @@ function initMap() {
             //Adding further Information to Location Array Properties
             for ( var y = 0 ; y< array.length;y++){
                 for( var x = 0;x<locationsMarker.length;x++){
-                    if(array[y].name === locationsMarker[x].title){
+                   
+                    if (array[y].name.indexOf(locationsMarker[x].title) >= 0) {
 
                         // postalcodes.push(array[y].location.postalCode);
                         locationsMarker[x].plz =array[y].location.postalCode;
